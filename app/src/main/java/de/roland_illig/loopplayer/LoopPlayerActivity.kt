@@ -8,7 +8,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
-import android.widget.ArrayAdapter
 import android.widget.Toast
 
 class LoopPlayerActivity : Activity(), CuePointListFragment.Callback {
@@ -88,10 +87,13 @@ class LoopPlayerActivity : Activity(), CuePointListFragment.Callback {
             val assetFileDescriptor = contentResolver.openAssetFileDescriptor(audioFile, "r")
             val fileDescriptor = assetFileDescriptor.fileDescriptor
 
+            this.mediaPlayer?.release()
+
             val mediaPlayer = MediaPlayer()
             mediaPlayer.setDataSource(fileDescriptor)
             mediaPlayer.prepare()
             mediaPlayer.start()
+
             this.mediaPlayer = mediaPlayer
             pauseAt = Int.MAX_VALUE
             cuePointsFragment.clear()
