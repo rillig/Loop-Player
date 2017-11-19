@@ -27,61 +27,9 @@
         android:enabled="true"
         android:minWidth="72dp"
         android:onClick="onCuePointPressed"
-        android:text="Cue"
+        android:text="Cues"
         app:layout_constraintLeft_toRightOf="@id/openButton"
         app:layout_constraintTop_toTopOf="parent"/>
-
-    <de.roland_illig.loopplayer.WaveformView
-        android:id="@+id/waveformView"
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:layout_margin="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/openButton"
-        />
-
-    <Button
-        android:id="@+id/prevButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:minWidth="72dp"
-        android:text="&lt;&lt;"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/waveformView"
-        />
-
-    <Button
-        android:id="@+id/backButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:minWidth="72dp"
-        android:text="&lt;"
-        app:layout_constraintStart_toEndOf="@id/prevButton"
-        app:layout_constraintTop_toBottomOf="@id/waveformView"/>
-
-    <Button
-        android:id="@+id/forwardButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:minWidth="72dp"
-        android:text="&gt;"
-        app:layout_constraintStart_toEndOf="@id/backButton"
-        app:layout_constraintTop_toBottomOf="@id/waveformView"/>
-
-    <Button
-        android:id="@+id/nextButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:minWidth="72dp"
-        android:text="&gt;&gt;"
-        app:layout_constraintStart_toEndOf="@id/forwardButton"
-        app:layout_constraintTop_toBottomOf="@id/waveformView"/>
 
     <ListView
         android:id="@+id/cuePointsList"
@@ -91,6 +39,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/prevButton"/>
+        app:layout_constraintTop_toBottomOf="@id/openButton"/>
 
 </android.support.constraint.ConstraintLayout>
