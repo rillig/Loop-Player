@@ -58,6 +58,7 @@ class LoopPlayerActivity : Activity(), CuePointListFragment.Callback {
 
     override fun onCuePointPressed(cuePoint: CuePoint) {
         mediaPlayer.seekTo(cuePoint.start)
+        mediaPlayer.start()
     }
 
     fun playAudio() {
