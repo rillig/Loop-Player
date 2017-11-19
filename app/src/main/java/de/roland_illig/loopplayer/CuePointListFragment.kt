@@ -32,7 +32,9 @@ class CuePointListFragment : ListFragment() {
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
             val row = super.getView(position, convertView, parent)
             val title = row.findViewById<TextView>(android.R.id.text1)
-            title.text = getItem(position)!!.toString()
+            fun formatTime(millis: Int) = String.format("%d:%02d.%01d", millis / 60_000, millis / 1000 % 60, millis / 100 % 10)
+            val cuePoint = getItem(position)
+            title.text = String.format("%s until %s", formatTime(cuePoint.start), formatTime(cuePoint.end))
             return row
         }
     }

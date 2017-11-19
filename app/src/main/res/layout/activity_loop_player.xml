@@ -27,7 +27,7 @@
         android:enabled="true"
         android:minWidth="72dp"
         android:onClick="onSetCueClick"
-        android:text="Cues"
+        android:text="Mark"
         app:layout_constraintLeft_toRightOf="@id/openButton"
         app:layout_constraintTop_toTopOf="parent"/>
 
@@ -39,7 +39,7 @@
         android:enabled="true"
         android:minWidth="72dp"
         android:onClick="onPauseClick"
-        android:text="Stop"
+        android:text="Pause"
         app:layout_constraintLeft_toRightOf="@id/cuesButton"
         app:layout_constraintTop_toTopOf="parent"/>
 
