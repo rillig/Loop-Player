@@ -8,14 +8,14 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
-import android.widget.ListView
 import android.widget.Toast
 
-class LoopPlayerActivity : Activity() {
+class LoopPlayerActivity : Activity(), CuePointListFragment.Callback {
 
     private val openRequestCode = 1
-    private val cuePoints = ArrayList<String>()
     private lateinit var audioFile: Uri
+    private lateinit var mediaPlayer: MediaPlayer
+    private lateinit var cuePointsFragment: CuePointListFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,9 +23,8 @@ class LoopPlayerActivity : Activity() {
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
     }
 
-    override fun onResume() {
-        super.onResume()
-        cuePoints().adapter = ArrayAdapter<String>(this, R.layout.string_list_item, cuePoints)
+    override fun init(fragment: CuePointListFragment) {
+        this.cuePointsFragment = fragment
     }
 
     fun onOpenPressed(view: View) {
@@ -46,8 +45,19 @@ class LoopPlayerActivity : Activity() {
         }
     }
 
-    fun onCuePointPressed(view: View) {
-        (cuePoints().adapter as ArrayAdapter<String>).add(Math.random().toString())
+    fun onCuesPressed(view: View) {
+        val cuePoints = cuePointsFragment.listAdapter as ArrayAdapter<CuePoint>
+        val start = if (cuePoints.isEmpty) 0 else cuePoints.getItem(cuePoints.count - 1).end
+        val end = mediaPlayer.currentPosition
+        cuePoints.add(CuePoint(start, end))
+    }
+
+    fun onStopPressed(view: View) {
+        mediaPlayer.stop()
+    }
+
+    override fun onCuePointPressed(cuePoint: CuePoint) {
+        mediaPlayer.seekTo(cuePoint.start)
     }
 
     fun playAudio() {
@@ -55,14 +65,12 @@ class LoopPlayerActivity : Activity() {
             val assetFileDescriptor = contentResolver.openAssetFileDescriptor(audioFile, "r")
             val fileDescriptor = assetFileDescriptor.fileDescriptor
 
-            val mp = MediaPlayer()
-            mp.setDataSource(fileDescriptor)
-            mp.prepare()
-            mp.start()
+            mediaPlayer = MediaPlayer()
+            mediaPlayer.setDataSource(fileDescriptor)
+            mediaPlayer.prepare()
+            mediaPlayer.start()
         } catch (e: Exception) {
             Toast.makeText(this, "Cannot play audio: " + e, Toast.LENGTH_LONG).show()
         }
     }
-
-    private fun cuePoints() = findViewById<ListView>(R.id.cuePointsList)
 }

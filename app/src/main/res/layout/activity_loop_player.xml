@@ -20,19 +20,32 @@
         app:layout_constraintTop_toTopOf="parent"/>
 
     <Button
-        android:id="@+id/cueButton"
+        android:id="@+id/cuesButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:enabled="true"
         android:minWidth="72dp"
-        android:onClick="onCuePointPressed"
+        android:onClick="onCuesPressed"
         android:text="Cues"
         app:layout_constraintLeft_toRightOf="@id/openButton"
         app:layout_constraintTop_toTopOf="parent"/>
 
-    <ListView
+    <Button
+        android:id="@+id/stopButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:enabled="true"
+        android:minWidth="72dp"
+        android:onClick="onStopPressed"
+        android:text="Stop"
+        app:layout_constraintLeft_toRightOf="@id/cuesButton"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <fragment
         android:id="@+id/cuePointsList"
+        android:name="de.roland_illig.loopplayer.CuePointListFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_margin="16dp"
