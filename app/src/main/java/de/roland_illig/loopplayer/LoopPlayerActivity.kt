@@ -48,7 +48,7 @@ class LoopPlayerActivity : Activity(), CuePointListFragment.Callback {
     }
 
     fun onOpenClick(view: View) {
-        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
         intent.addCategory(Intent.CATEGORY_OPENABLE)
         intent.type = "audio/*"
         startActivityForResult(intent, openRequestCode)
