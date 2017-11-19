@@ -14,12 +14,12 @@ import android.widget.Toast
 class LoopPlayerActivity : Activity(), CuePointListFragment.Callback {
 
     private val openRequestCode = 1
-    private lateinit var audioFile: Uri
-    private var mediaPlayer: MediaPlayer? = null
     private lateinit var cuePointsFragment: CuePointListFragment
+    private val handler = Handler()
+    private var mediaPlayer: MediaPlayer? = null
+
     private var pauseAt = Int.MAX_VALUE
     private var finished = false
-    private val handler = Handler()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,29 +47,24 @@ class LoopPlayerActivity : Activity(), CuePointListFragment.Callback {
         this.cuePointsFragment = fragment
     }
 
-    fun onOpenPressed(view: View) {
+    fun onOpenClick(view: View) {
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
         intent.addCategory(Intent.CATEGORY_OPENABLE)
         intent.type = "audio/*"
         startActivityForResult(intent, openRequestCode)
     }
 
-    public override fun onActivityResult(requestCode: Int, resultCode: Int,
-                                         resultData: Intent?) {
-
+    public override fun onActivityResult(requestCode: Int, resultCode: Int, resultData: Intent?) {
         if (requestCode == openRequestCode && resultCode == Activity.RESULT_OK) {
-            if (resultData != null) {
-                audioFile = resultData.data
-                playAudio()
-            }
+            open(resultData!!.data)
         }
     }
 
     fun onSetCueClick(view: View) {
-        val cuePoints = cuePointsFragment.listAdapter as ArrayAdapter<CuePoint>
-        val start = if (cuePoints.isEmpty) 0 else cuePoints.getItem(cuePoints.count - 1).end
+        val last = cuePointsFragment.getLast()
+        val start = last?.end ?: 0
         val end = mediaPlayer!!.currentPosition
-        cuePoints.add(CuePoint(start, end))
+        cuePointsFragment.add(CuePoint(start, end))
     }
 
     fun onPauseClick(view: View) {
@@ -88,7 +83,7 @@ class LoopPlayerActivity : Activity(), CuePointListFragment.Callback {
         pauseAt = cuePoint.end
     }
 
-    fun playAudio() {
+    fun open(audioFile: Uri) {
         try {
             val assetFileDescriptor = contentResolver.openAssetFileDescriptor(audioFile, "r")
             val fileDescriptor = assetFileDescriptor.fileDescriptor
@@ -98,6 +93,8 @@ class LoopPlayerActivity : Activity(), CuePointListFragment.Callback {
             mediaPlayer.prepare()
             mediaPlayer.start()
             this.mediaPlayer = mediaPlayer
+            pauseAt = Int.MAX_VALUE
+            cuePointsFragment.clear()
         } catch (e: Exception) {
             Toast.makeText(this, "Cannot play audio: " + e, Toast.LENGTH_LONG).show()
         }

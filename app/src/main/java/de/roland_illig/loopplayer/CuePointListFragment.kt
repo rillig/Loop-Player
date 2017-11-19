@@ -38,4 +38,19 @@ class CuePointListFragment : ListFragment() {
             return row
         }
     }
+
+    fun clear() {
+        adapter().clear()
+    }
+
+    fun getLast() : CuePoint? {
+        val cuePoints = adapter()
+        return if (cuePoints.isEmpty) null else cuePoints.getItem(cuePoints.count - 1)
+    }
+
+    fun add(cuePoint: CuePoint) {
+        adapter().add(cuePoint)
+    }
+
+    private fun adapter() = (listAdapter as ArrayAdapter<CuePoint>)
 }
