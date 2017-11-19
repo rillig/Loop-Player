@@ -14,7 +14,7 @@ class LoopPlayerActivity : Activity(), CuePointListFragment.Callback {
 
     private val openRequestCode = 1
     private lateinit var cuePointsFragment: CuePointListFragment
-    private val handler = Handler()
+    private lateinit var handler: Handler
     private var mediaPlayer: MediaPlayer? = null
 
     private var pauseAt = Int.MAX_VALUE
@@ -24,6 +24,7 @@ class LoopPlayerActivity : Activity(), CuePointListFragment.Callback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_loop_player)
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        handler = Handler()
         onTimer()
     }
 
@@ -55,7 +56,26 @@ class LoopPlayerActivity : Activity(), CuePointListFragment.Callback {
 
     public override fun onActivityResult(requestCode: Int, resultCode: Int, resultData: Intent?) {
         if (requestCode == openRequestCode && resultCode == Activity.RESULT_OK) {
-            open(resultData!!.data)
+            playAudio(resultData!!.data)
+        }
+    }
+
+    private fun playAudio(uri: Uri) {
+        try {
+            val assetFileDescriptor = contentResolver.openAssetFileDescriptor(uri, "r")
+            val fileDescriptor = assetFileDescriptor.fileDescriptor
+
+            val mediaPlayer = MediaPlayer()
+            mediaPlayer.setDataSource(fileDescriptor)
+            mediaPlayer.prepare()
+            mediaPlayer.start()
+
+            this.mediaPlayer?.release()
+            this.mediaPlayer = mediaPlayer
+            pauseAt = Int.MAX_VALUE
+            cuePointsFragment.clear()
+        } catch (e: Exception) {
+            Toast.makeText(this, "Cannot play audio: " + e, Toast.LENGTH_LONG).show()
         }
     }
 
@@ -80,25 +100,5 @@ class LoopPlayerActivity : Activity(), CuePointListFragment.Callback {
         mediaPlayer.seekTo(cuePoint.start)
         mediaPlayer.start()
         pauseAt = cuePoint.end
-    }
-
-    fun open(audioFile: Uri) {
-        try {
-            val assetFileDescriptor = contentResolver.openAssetFileDescriptor(audioFile, "r")
-            val fileDescriptor = assetFileDescriptor.fileDescriptor
-
-            this.mediaPlayer?.release()
-
-            val mediaPlayer = MediaPlayer()
-            mediaPlayer.setDataSource(fileDescriptor)
-            mediaPlayer.prepare()
-            mediaPlayer.start()
-
-            this.mediaPlayer = mediaPlayer
-            pauseAt = Int.MAX_VALUE
-            cuePointsFragment.clear()
-        } catch (e: Exception) {
-            Toast.makeText(this, "Cannot play audio: " + e, Toast.LENGTH_LONG).show()
-        }
     }
 }
