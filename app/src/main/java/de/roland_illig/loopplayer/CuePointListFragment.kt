@@ -11,7 +11,7 @@ import java.util.ArrayList
 class CuePointListFragment : ListFragment() {
 
     interface Callback {
-        fun onCuePointPressed(cuePoint: CuePoint)
+        fun onCueClick(cuePoint: CuePoint)
         fun init(fragment: CuePointListFragment)
     }
 
@@ -24,7 +24,7 @@ class CuePointListFragment : ListFragment() {
     override fun onListItemClick(l: ListView, v: View, position: Int, id: Long) {
         val cuePoint = (listAdapter as Adapter).getItem(position)
 
-        (activity as Callback).onCuePointPressed(cuePoint)
+        (activity as Callback).onCueClick(cuePoint)
     }
 
     internal inner class Adapter : ArrayAdapter<CuePoint>(activity, android.R.layout.simple_list_item_1, ArrayList()) {
