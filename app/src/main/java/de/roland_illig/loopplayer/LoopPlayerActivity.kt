@@ -11,10 +11,10 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 
-class LoopPlayerActivity : LifecycleLoggingActivity(), CuePointListFragment.Callback {
+class LoopPlayerActivity : LifecycleLoggingActivity(), SectionListFragment.Callback {
 
     private val openRequestCode = 1
-    private var cuePointsFragment: CuePointListFragment? = null
+    private var sectionsFragment: SectionListFragment? = null
     private var handler: Handler? = null
     private var mediaPlayer: MediaPlayer? = null
 
@@ -34,16 +34,17 @@ class LoopPlayerActivity : LifecycleLoggingActivity(), CuePointListFragment.Call
         mediaPlayer = MediaPlayer()
         onTimer()
 
-        withAppState(this) {
-            if (it.uri != "") {
-                loadAudio(Uri.parse(it.uri))
+        Persistence.withFileState(this) { appState, fileState ->
+            if (appState.uri != "") {
+                loadAudio(Uri.parse(appState.uri))
                 if (justOpened) {
                     justOpened = false
-                    it.cuePoints.clear()
-                    cuePointsFragment!!.replaceAll(it.cuePoints)
-                    mediaPlayer!!.start()
+                    sectionsFragment!!.replaceAll(fileState.sections)
+                    if (fileState.sections.isEmpty()) {
+                        mediaPlayer!!.start()
+                    }
                 } else {
-                    cuePointsFragment?.replaceAll(it.cuePoints)
+                    sectionsFragment?.replaceAll(fileState.sections)
                 }
             }
         }
@@ -62,13 +63,13 @@ class LoopPlayerActivity : LifecycleLoggingActivity(), CuePointListFragment.Call
         if (mediaPlayer.isPlaying && mediaPlayer.currentPosition >= pauseAt) {
             mediaPlayer.pause()
         }
-        handler?.postDelayed(this::onTimer, 50)
+        handler?.postDelayed(this::onTimer, 20)
     }
 
-    override fun init(fragment: CuePointListFragment) {
-        this.cuePointsFragment = fragment
-        withAppState(this) {
-            fragment.replaceAll(it.cuePoints)
+    override fun init(fragment: SectionListFragment) {
+        this.sectionsFragment = fragment
+        Persistence.withFileState(this) { _, fileState ->
+            fragment.replaceAll(fileState.sections)
         }
     }
 
@@ -83,8 +84,10 @@ class LoopPlayerActivity : LifecycleLoggingActivity(), CuePointListFragment.Call
     public override fun onActivityResult(requestCode: Int, resultCode: Int, resultData: Intent?) {
         log("onActivityResult")
         if (requestCode == openRequestCode && resultCode == Activity.RESULT_OK) {
-            withAppState(this) {
-                it.uri = resultData!!.data.toString()
+            Persistence.withAppState(this) {
+                val uri = resultData!!.data
+                it.uri = uri.toString()
+                it.fileName = sha256Hex(this, uri)
             }
             justOpened = true
         }
@@ -104,20 +107,33 @@ class LoopPlayerActivity : LifecycleLoggingActivity(), CuePointListFragment.Call
         }
     }
 
-    fun onSetCueClick(view: View) {
-        val cuePointsFragment = cuePointsFragment!!
-        val last = cuePointsFragment.getLast()
+    fun onMarkClick(view: View) {
+        val sectionsFragment = sectionsFragment!!
+        val mediaPlayer = mediaPlayer!!
+
+        val last = sectionsFragment.getLast()
+        if (last == null && !mediaPlayer.isPlaying) {
+            mediaPlayer.seekTo(0)
+            mediaPlayer.start()
+            return
+        }
+
         val start = last?.end ?: 0
-        val end = mediaPlayer!!.currentPosition
-        val cuePoint = CuePoint(start, end)
-        withAppState(this, {
-            it.cuePoints.add(cuePoint)
+        val end = mediaPlayer.currentPosition
+        if (start == end) {
+            return
+        }
+
+        val section = Section(start, end)
+        Persistence.withFileState(this, { _, fileState ->
+            fileState.sections.add(section)
         })
-        cuePointsFragment.add(cuePoint)
+        sectionsFragment.add(section)
     }
 
     fun onPauseClick(view: View) {
         val mediaPlayer = mediaPlayer!!
+
         if (mediaPlayer.isPlaying) {
             mediaPlayer.pause()
         } else {
@@ -125,10 +141,17 @@ class LoopPlayerActivity : LifecycleLoggingActivity(), CuePointListFragment.Call
         }
     }
 
-    override fun onCueClick(cuePoint: CuePoint) {
+    fun onClearClick(view: View) {
+        Persistence.withFileState(this) { _, fileState ->
+            fileState.sections.clear()
+            sectionsFragment!!.replaceAll(fileState.sections)
+        }
+    }
+
+    override fun onSectionClick(section: Section) {
         val mediaPlayer = mediaPlayer!!
-        mediaPlayer.seekTo(cuePoint.start)
+        mediaPlayer.seekTo(section.start)
         mediaPlayer.start()
-        pauseAt = cuePoint.end
+        pauseAt = section.end
     }
 }

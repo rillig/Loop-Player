@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Loop Player</string>
+    <string name="openButton">Open</string>
+    <string name="markButton">Mark</string>
+    <string name="pauseButton">Pause</string>
+    <string name="clearButton">Clear</string>
 </resources>

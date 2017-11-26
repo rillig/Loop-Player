@@ -15,19 +15,19 @@
         android:layout_margin="16dp"
         android:minWidth="72dp"
         android:onClick="onOpenClick"
-        android:text="Open"
+        android:text="@string/openButton"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
     <Button
-        android:id="@+id/cuesButton"
+        android:id="@+id/markButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:enabled="true"
         android:minWidth="72dp"
-        android:onClick="onSetCueClick"
-        android:text="Mark"
+        android:onClick="onMarkClick"
+        android:text="@string/markButton"
         app:layout_constraintLeft_toRightOf="@id/openButton"
         app:layout_constraintTop_toTopOf="parent"/>
 
@@ -39,13 +39,25 @@
         android:enabled="true"
         android:minWidth="72dp"
         android:onClick="onPauseClick"
-        android:text="Pause"
-        app:layout_constraintLeft_toRightOf="@id/cuesButton"
+        android:text="@string/pauseButton"
+        app:layout_constraintLeft_toRightOf="@id/markButton"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <Button
+        android:id="@+id/clearButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:enabled="true"
+        android:minWidth="72dp"
+        android:onClick="onClearClick"
+        android:text="@string/clearButton"
+        app:layout_constraintLeft_toRightOf="@id/stopButton"
         app:layout_constraintTop_toTopOf="parent"/>
 
     <fragment
-        android:id="@+id/cuePointsList"
-        android:name="de.roland_illig.loopplayer.CuePointListFragment"
+        android:id="@+id/sectionsList"
+        android:name="de.roland_illig.loopplayer.SectionListFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_margin="16dp"
