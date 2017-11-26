@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 
 class LoopPlayerActivity : LifecycleLoggingActivity(), SectionListFragment.Callback {
@@ -41,6 +42,7 @@ class LoopPlayerActivity : LifecycleLoggingActivity(), SectionListFragment.Callb
                     justOpened = false
                     sectionsFragment!!.replaceAll(fileState.sections)
                     if (fileState.sections.isEmpty()) {
+                        pauseAt = Int.MAX_VALUE
                         mediaPlayer!!.start()
                     }
                 } else {
@@ -62,6 +64,13 @@ class LoopPlayerActivity : LifecycleLoggingActivity(), SectionListFragment.Callb
         val mediaPlayer = mediaPlayer ?: return
         if (mediaPlayer.isPlaying && mediaPlayer.currentPosition >= pauseAt) {
             mediaPlayer.pause()
+        }
+        if (mediaPlayer.isPlaying) {
+            val currentPosition = findViewById<TextView>(R.id.currentPosition)
+            val text = formatTime(mediaPlayer.currentPosition)
+            if (text != currentPosition.text) {
+                currentPosition.text = text
+            }
         }
         handler?.postDelayed(this::onTimer, 20)
     }
@@ -114,6 +123,7 @@ class LoopPlayerActivity : LifecycleLoggingActivity(), SectionListFragment.Callb
         val last = sectionsFragment.getLast()
         if (last == null && !mediaPlayer.isPlaying) {
             mediaPlayer.seekTo(0)
+            pauseAt = Int.MAX_VALUE
             mediaPlayer.start()
             return
         }
@@ -121,6 +131,7 @@ class LoopPlayerActivity : LifecycleLoggingActivity(), SectionListFragment.Callb
         val start = last?.end ?: 0
         val end = mediaPlayer.currentPosition
         if (start == end) {
+            findViewById<TextView>(R.id.currentPosition).text = ""
             return
         }
 
@@ -150,8 +161,9 @@ class LoopPlayerActivity : LifecycleLoggingActivity(), SectionListFragment.Callb
 
     override fun onSectionClick(section: Section) {
         val mediaPlayer = mediaPlayer!!
+
         mediaPlayer.seekTo(section.start)
-        mediaPlayer.start()
         pauseAt = section.end
+        mediaPlayer.start()
     }
 }

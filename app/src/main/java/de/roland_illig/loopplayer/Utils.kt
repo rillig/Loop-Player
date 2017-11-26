@@ -29,3 +29,6 @@ fun sha256Hex(ctx: Context, uri: Uri): String {
         return bytesToHex(sha256.digest())
     }
 }
+
+fun formatTime(millis: Int) = String.format("%d:%02d.%03d",
+        millis / 60_000, millis / 1000 % 60, millis % 1000)
